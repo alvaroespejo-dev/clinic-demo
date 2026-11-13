@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" width="960" height="540" role="img" aria-labelledby="t d">
+  <title id="t">Database topology and clinic placement</title>
+  <desc id="d">One master database catalogs the clinics. Each clinic is either Dedicated, with its own database, or Shared, in a common database where rows are separated by TenantId.</desc>
+  <defs>
+    <style>
+      text { font-family: "Segoe UI", Arial, Helvetica, sans-serif; fill: #1c2b4a; }
+      .card { fill: #ffffff; stroke: #d9e0ea; stroke-width: 1.5; }
+      .soft { fill: #e6f2f0; stroke: #b7d9d4; stroke-width: 1.5; }
+      .teal { fill: #0f766e; }
+      .db { fill: #f4f6fb; stroke: #9aa7bd; stroke-width: 1.5; }
+      .h { font-size: 16px; font-weight: 700; }
+      .s { font-size: 12px; fill: #5c6b86; }
+      .w { fill: #ffffff; }
+      .ws { font-size: 12px; fill: #d7efeb; }
+      .line { stroke: #1c2b4a; stroke-width: 2; fill: none; marker-end: url(#a); }
+      .lbl { font-size: 12px; fill: #0f766e; font-weight: 600; }
+      .row { font-size: 12px; fill: #1c2b4a; }
+    </style>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1c2b4a"/>
+    </marker>
+  </defs>
+  <rect width="960" height="540" rx="18" fill="#fbfcff"/>
+
+  <rect class="teal" x="250" y="22" width="460" height="108" rx="14"/>
+  <text class="h w" x="480" y="50" text-anchor="middle">Master database · MasterDbContext</text>
+  <text class="ws" x="480" y="74" text-anchor="middle">Tenants (subdomain, placement, connection string, country)</text>
+  <text class="ws" x="480" y="92" text-anchor="middle">Languages · Countries and payment providers</text>
+  <text class="ws" x="480" y="110" text-anchor="middle">Platform operators · platform audit</text>
+
+  <rect class="card" x="20" y="38" width="190" height="76" rx="14"/>
+  <text class="h" x="115" y="66" text-anchor="middle">Platform operator</text>
+  <text class="s" x="115" y="86" text-anchor="middle">/platform/clinics</text>
+  <text class="s" x="115" y="102" text-anchor="middle">creates and activates clinics</text>
+  <path class="line" d="M210 76 L248 76"/>
+
+  <path class="line" d="M330 130 L190 204"/>
+  <path class="line" d="M400 130 L340 204"/>
+  <path class="line" d="M630 130 L770 204"/>
+  <text class="lbl" x="228" y="156">Dedicated</text>
+  <text class="lbl" x="690" y="156">Shared</text>
+
+  <rect class="soft" x="40" y="206" width="170" height="130" rx="14"/>
+  <text class="h" x="125" y="234" text-anchor="middle">Clinic A</text>
+  <text class="s" x="125" y="254" text-anchor="middle">own database</text>
+  <text class="s" x="125" y="270" text-anchor="middle">AEspejo_Clinic_a</text>
+  <text class="s" x="125" y="294" text-anchor="middle">full clinical model</text>
+  <text class="s" x="125" y="310" text-anchor="middle">AppDbContext</text>
+
+  <rect class="soft" x="250" y="206" width="170" height="130" rx="14"/>
+  <text class="h" x="335" y="234" text-anchor="middle">Clinic B</text>
+  <text class="s" x="335" y="254" text-anchor="middle">own database</text>
+  <text class="s" x="335" y="270" text-anchor="middle">AEspejo_Clinic_b</text>
+  <text class="s" x="335" y="294" text-anchor="middle">full clinical model</text>
+  <text class="s" x="335" y="310" text-anchor="middle">AppDbContext</text>
+
+  <rect class="db" x="480" y="206" width="440" height="170" rx="14"/>
+  <text class="h" x="700" y="234" text-anchor="middle">Shared database · AEspejo_Clinic_Shared</text>
+  <rect class="card" x="500" y="248" width="400" height="22" rx="6"/>
+  <text class="row" x="512" y="263" style="font-weight:700">TenantId</text>
+  <text class="row" x="640" y="263" style="font-weight:700">Patients row</text>
+  <rect class="soft" x="500" y="274" width="400" height="22" rx="6"/>
+  <text class="row" x="512" y="289">clinic C</text><text class="row" x="640" y="289">Ana García …</text>
+  <rect class="card" x="500" y="300" width="400" height="22" rx="6"/>
+  <text class="row" x="512" y="315">clinic D</text><text class="row" x="640" y="315">Luis Pérez …</text>
+  <rect class="soft" x="500" y="326" width="400" height="22" rx="6"/>
+  <text class="row" x="512" y="341">clinic C</text><text class="row" x="640" y="341">Marta Ruiz …</text>
+  <text class="s" x="700" y="366" text-anchor="middle">every clinic-owned table carries a TenantId, filtered on every query</text>
+
+  <rect class="card" x="40" y="404" width="880" height="112" rx="14"/>
+  <text class="h" x="60" y="432">Engine selection (Database:Provider) applies to the master and to every tenant database</text>
+  <text class="s" x="60" y="458">SQL Server — EF Core migrations, applied to every clinic database at startup.</text>
+  <text class="s" x="60" y="476">PostgreSQL — its own migrations project; case-insensitive search and UTC date-times are normalised.</text>
+  <text class="s" x="60" y="494">SQLite — one .db file per clinic under the data directory; the schema is created from the model and is only ever extended, never rebuilt.</text>
+</svg>

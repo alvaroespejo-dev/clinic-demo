@@ -11,7 +11,11 @@
 ![SQL Server](https://img.shields.io/badge/SQL%20Server-supported-CC2927?logo=microsoftsqlserver&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-supported-003B57?logo=sqlite&logoColor=white)
 
-**🌐 Live demo** — App: <https://blue-forest-0df195910.7.azurestaticapps.net> · API: <https://clinicdemoapi-accybtbjdfcvcce4.canadacentral-01.azurewebsites.net> · Login: `admin@demo.local` / `Admin12345`
+**🌐 Live demo** — App: <https://clinic.alvaroespejo.com> · Alternate host: <https://blue-forest-0df195910.7.azurestaticapps.net> · API: <https://clinicdemoapi-accybtbjdfcvcce4.canadacentral-01.azurewebsites.net> · Login: `admin@demo.local` / `Admin12345`
+
+<p align="center">
+  <img src="docs/images/screenshots/01-dashboard.webp" alt="AEspejo.Clinic practice dashboard" width="900">
+</p>
 
 ---
 
@@ -40,14 +44,16 @@ every tenant database.
 | Source | Provider value | Typical use | Schema strategy |
 | --- | --- | --- | --- |
 | **SQL Server** | `SqlServer` *(default)* | Production | EF Core **migrations** (`Migrate()`) |
-| **SQLite** | `Sqlite` | Cheap demo / local dev (one `.db` file per tenant) | `EnsureCreated()` from the current model |
+| **PostgreSQL** | `PostgreSql` | Production alternative (Npgsql) | Its own migrations project, `AEspejo.Clinic.Migrations.PostgreSql` |
+| **SQLite** | `Sqlite` | Cheap demo / local dev (one `.db` file per tenant) | `EnsureCreated()` from the current model, then only extended in place |
 
 **Database topology**
 
 | Database | Context | Content | Lives on |
 | --- | --- | --- | --- |
-| **Master** | `MasterDbContext` | Tenant catalog + supported languages | Always the master DB / file |
-| **Tenant** (one per company) | `AppDbContext` | The full clinical model | That company's own DB / file |
+| **Master** | `MasterDbContext` | Tenant catalog, supported languages, country catalog, platform operators and their audit | Always the master DB / file |
+| **Tenant** (one per company, `Dedicated`) | `AppDbContext` | The full clinical model | That company's own DB / file |
+| **Shared** (many companies, `Shared`) | `AppDbContext` | The same model; rows are kept apart by `TenantId` | The common `AEspejo_Clinic_Shared` database |
 
 > On SQLite each tenant is a separate `.db` file under a data directory (`%HOME%\data` on Azure App Service —
 > persistent; `.sqlite-data` locally). See [Database & Multi-tenancy](#-database--multi-tenancy).
@@ -56,48 +62,96 @@ every tenant database.
 
 ## ✨ Features
 
-- 🏢 **Multi-tenancy** — database-per-tenant isolation; tenant resolved from subdomain or `X-Tenant` header.
+- 🏢 **Multi-tenancy** — dedicated database per clinic (or a shared one split by `TenantId`); tenant resolved from subdomain or `X-Tenant` header, and bound to the token.
+- 🛰️ **Platform console** — operators create, activate and administer clinics at `/platform/clinics`, with a country catalog and an audit trail.
 - 🔐 **Authentication & authorization** — JWT bearer tokens, role-based (`Admin`, `Dentist`, `Assistant`, `Receptionist`), passwords hashed with BCrypt.
 - 🧩 **Generic CRUD engine** — one base controller/service/repository set drives every entity; the frontend generates pages from a single registry.
 - 🦷 **Clinical model** — patients, medical history (allergies & conditions), odontograms & per-tooth records, appointments & details, treatment plans & items.
-- 💳 **Billing** — invoices and payments with status tracking (draft / issued / partially paid / paid / cancelled).
+- 💳 **Billing** — invoices and payments with status tracking (draft / issued / partially paid / paid / cancelled); online card payments through Stripe Checkout or Mercado Pago, public pay links, statements and PDF receipts.
+- 📅 **Scheduling & patient self-service** — calendar, waitlist, public online booking against real availability, SMS/email reminders, and confirm/cancel by SMS reply or email link.
+- 🩻 **Clinical extras** — patient chart, clinical images, orthodontic cases (PDF/Excel export), prescriptions and management reports.
 - 🗂️ **Service catalog** — per-language translatable services (`ServiceCatalog` + `ServiceCatalogTranslation`).
 - 🕵️ **Automatic audit trail** — every create/update/delete is written to an `AuditLog` (read-only through the API).
 - ♻️ **Soft delete** — flagged entities are deactivated (`IsActive = false`) instead of physically removed.
 - 🌍 **Internationalization** — every user-visible string is an i18n key in **both** `en.json` and `es.json`; enums serialize as strings and are translated.
 - 🧾 **Interactive API docs** — OpenAPI document served with **Scalar** UI in development.
 - 🌱 **Demo seeding** — a `DevSeeder` provisions a `demo` tenant; SQL scripts seed ~1 month of realistic activity.
-- 🧪 **Automated tests** — xUnit + EF Core InMemory suite for Application services.
+- 🧪 **Automated tests** — xUnit suites for the Application services (real SQLite files) and for the API (in memory).
+
+---
+
+## 🖼️ Screenshots
+
+Real captures of the running application against the `demo` tenant (patient names, documents and figures are
+fictitious). More images live in [`docs/images/screenshots/`](docs/images/screenshots/) and
+[`docs/marketing/screenshots/`](docs/marketing/screenshots/).
+
+| | |
+| --- | --- |
+| ![Appointments calendar](docs/images/screenshots/02-appointments-calendar.webp)<br>**Appointments calendar** — day / week / month, colour-coded statuses, per-professional filter. | ![Patients](docs/images/screenshots/03-patients.webp)<br>**Patients** — card directory with photos, search and quick actions. |
+| ![Patient chart](docs/images/screenshots/04-patient-chart.webp)<br>**Patient chart** — data, medical alerts and account status in one place. | ![Odontogram](docs/images/screenshots/05-odontogram.webp)<br>**Interactive odontogram** — findings per tooth and surface. |
+| ![Treatment plan](docs/images/screenshots/06-treatment-plan.webp)<br>**Treatment plan** — quote, track progress and bill performed work. | ![Orthodontics](docs/images/screenshots/07-orthodontics.webp)<br>**Orthodontic case** — cost, payments, balance and monthly fee. |
+| ![Clinical images](docs/images/screenshots/08-clinical-images.webp)<br>**Clinical images** — X-rays and photos per patient, with compare view. | ![Invoices](docs/images/screenshots/09-invoices.webp)<br>**Invoices** — status, balance and filters by branch and date. |
+| ![Payments](docs/images/screenshots/10-payments.webp)<br>**Payments** — record, charge by card or share a pay link. | ![Reports](docs/images/screenshots/11-reports.webp)<br>**Reports** — billed, collected, owed, no-show rate, CSV export. |
+| ![Online booking](docs/images/screenshots/12-online-booking.webp)<br>**Public online booking** — free slots only, no patient login. | ![Landing page](docs/images/screenshots/13-landing.webp)<br>**Public landing page** of the product. |
+
+<p align="center">
+  <img src="docs/images/screenshots/14-mobile-dashboard.webp" alt="Dashboard on a phone" width="260"><br>
+  <sub><b>Responsive PWA</b> — the same app on a phone, installable to the home screen.</sub>
+</p>
 
 ---
 
 ## 🏛 Architecture and Design Patterns Used
 
 Clean / layered architecture with a strict dependency direction:
-`Domain ← Application ← Infrastructure / API`. The `Master` project (tenant + language catalog) is independent
-of the tenant clinical model.
+`Domain ← Application ← Infrastructure / API`. The `Master` project (tenant catalog, languages, countries,
+platform operators) is independent of the tenant clinical model.
 
-```mermaid
-flowchart LR
-    Client["AEspejo.Clinic.Client<br/>(React SPA)"] -->|REST + JWT| API
-    API["AEspejo.Clinic.API<br/>(controllers, middleware, auth)"] --> Application
-    API --> Infrastructure
-    API --> Master
-    Application["AEspejo.Clinic.Application<br/>(services, DTOs, validators)"] --> Domain
-    Infrastructure["AEspejo.Clinic.Infrastructure<br/>(EF Core, repositories, tenancy)"] --> Application
-    Infrastructure --> Domain
-    Master["AEspejo.Clinic.Master<br/>(tenant + language catalog)"] --> Domain
-    Domain["AEspejo.Clinic.Domain<br/>(entities, enums)"]
-```
+### Solution layers
+
+![Solution layers and dependency direction](docs/images/architecture/01-layers.svg)
 
 | Layer | Project | Responsibility |
 | --- | --- | --- |
-| Domain | `AEspejo.Clinic.Domain` | Entities (`BaseEntity`, `ISoftDeletable`), enums. **No dependencies.** |
-| Application | `AEspejo.Clinic.Application` | DTOs, services, `ICrudService<,,>`, validators, Mapster config, `Result<T>`. |
-| Infrastructure | `AEspejo.Clinic.Infrastructure` | EF Core (`AppDbContext`), repositories, `AuditInterceptor`, multi-tenancy resolvers, DB provider abstraction. |
-| Master | `AEspejo.Clinic.Master` | `MasterDbContext`: tenants + languages, always on the master DB. |
-| API | `AEspejo.Clinic.API` | Controllers, `TenantResolutionMiddleware`, JWT auth, DI composition, `DevSeeder`. |
-| Client | `AEspejo.Clinic.Client` | React SPA (registry-driven CRUD UI). |
+| Domain | `AEspejo.Clinic.Domain` | Entities (`BaseEntity`, `ISoftDeletable`, `ITenantOwned`), enums. **No dependencies.** |
+| Application | `AEspejo.Clinic.Application` | DTOs, services, `ICrudService<,,>`, validators, Mapster config, `Result<T>`, notification and public-action logic. Never references provider SDKs such as Stripe. |
+| Infrastructure | `AEspejo.Clinic.Infrastructure` | EF Core (`AppDbContext`), repositories, `AuditInterceptor`, multi-tenancy, DB provider abstraction, payment gateways (Stripe, Mercado Pago), SMS/email senders, PDF and Excel documents, file storage. |
+| Master | `AEspejo.Clinic.Master` | `MasterDbContext`: tenants, languages, countries and payment providers, platform operators and audit; always on the master DB. |
+| Migrations | `AEspejo.Clinic.Migrations.PostgreSql` | PostgreSQL-only migrations for both contexts (the SQL Server history lives in Infrastructure and Master). |
+| API | `AEspejo.Clinic.API` | Controllers, `TenantResolutionMiddleware`, JWT auth, webhooks, reminder background service, DI composition, `DevSeeder`. |
+| Client | `AEspejo.Clinic.Client` | React SPA (registry-driven CRUD UI, public booking and payment pages, platform console). |
+
+### Life of a request
+
+Every private request goes through the same pipeline: authentication, tenant resolution (the token must belong to
+the clinic named by the subdomain or `X-Tenant` header), role authorization, controller, service and repository.
+The repository only ever sees the current clinic's rows.
+
+![Life of an API request](docs/images/architecture/02-request-flow.svg)
+
+### Multi-tenancy and databases
+
+The master database is the catalog; each clinic is either **Dedicated** (its own database) or **Shared** (a common
+database where every clinic-owned row carries a `TenantId`). The engine (`SqlServer`, `PostgreSql` or `Sqlite`) is a
+configuration choice that applies to the master and to every tenant database.
+
+![Master database, dedicated and shared clinic databases](docs/images/architecture/03-multitenancy.svg)
+
+### The generic CRUD engine
+
+Adding an entity rarely needs new infrastructure: one registry entry in the SPA mirrors a thin controller, a
+service and a repository on the backend.
+
+![Generic CRUD pipeline across frontend and backend](docs/images/architecture/05-generic-crud.svg)
+
+### Runtime and deployment
+
+The SPA is a static site; the API is a single App Service that serves every clinic. Webhooks (Stripe, Mercado Pago,
+Twilio) enter through the API, and uploads, SQLite files and encryption keys live in one persistent data directory
+so a redeploy never wipes them.
+
+![Runtime and deployment view](docs/images/architecture/04-deployment.svg)
 
 **Patterns & techniques**
 
@@ -105,8 +159,9 @@ flowchart LR
 - **Repository pattern** — `IRepository<T>`, with a `SoftDeleteRepository<T>` closed registration overriding the open generic for soft-deletable entities.
 - **Generic / Template Method CRUD** — `CrudControllerBase` + `CrudServiceBase` / `SoftDeleteCrudServiceBase`; subclasses only add specifics.
 - **Result pattern** — `Result<T>` carries success / not-found / validation outcomes instead of throwing.
-- **Strategy (provider selection)** — a single `DatabaseProviderExtensions` switches between SQL Server and SQLite.
-- **Middleware / Chain of Responsibility** — `TenantResolutionMiddleware` resolves the tenant per request.
+- **Strategy (provider selection)** — a single `DatabaseProviderExtensions` switches between SQL Server, PostgreSQL and SQLite; payment gateways sit behind `IPaymentGateway`.
+- **Middleware / Chain of Responsibility** — `TenantResolutionMiddleware` resolves the tenant per request and binds it to the token.
+- **Global query filter** — `ITenantOwned` entities are filtered by `TenantId` on every query, so a shared database stays isolated.
 - **Interceptor** — `AuditInterceptor` writes audit rows on `SaveChanges` automatically.
 - **Object mapping** — **Mapster** flattens navigation properties (`Branch.Name` → `BranchName`).
 - **Validation** — **FluentValidation** with a `NoOpValidator<>` fallback.
@@ -117,13 +172,14 @@ flowchart LR
 
 ## 🧱 Tech Stack
 
-**Backend** · .NET 10 · ASP.NET Core Web API · EF Core 10 (SQL Server & SQLite providers) · FluentValidation ·
-Mapster · BCrypt.Net · JWT Bearer · OpenAPI + Scalar.
+**Backend** · .NET 10 · ASP.NET Core Web API · EF Core 10 (SQL Server, PostgreSQL & SQLite providers) · FluentValidation ·
+Mapster · BCrypt.Net · JWT Bearer · OpenAPI + Scalar · QuestPDF · ClosedXML · Stripe.net · Mercado Pago SDK ·
+Twilio · MailKit.
 
 **Frontend** · React 19 · Vite 8 · TypeScript 5 · TanStack Query · React Router · react-i18next · Tailwind CSS ·
-Axios · oxlint.
+Axios · PWA · oxlint.
 
-**Data** · SQL Server / SQLite · EF Core migrations (SQL Server).
+**Data** · SQL Server / PostgreSQL / SQLite · EF Core migrations (SQL Server and PostgreSQL).
 
 ---
 
@@ -156,7 +212,7 @@ The dev environment is preconfigured to use SQLite by default. Just run the API:
 dotnet run --project src/AEspejo.Clinic.API
 ```
 
-- API: **http://localhost:5287** · API docs (Scalar): **http://localhost:5287/scalar**
+- API: **http://localhost:5190** · API docs (Scalar): **http://localhost:5190/scalar**
 - On first run it creates the `.db` files under `src/AEspejo.Clinic.API/.sqlite-data/` and seeds the `demo` tenant.
 
 ### Option B — Run on SQL Server
@@ -176,7 +232,7 @@ Set the provider back to SQL Server and point the connection string at your inst
 ```bash
 cd src/AEspejo.Clinic.Client
 npm install
-npm run dev          # http://localhost:5173
+npm run dev          # http://localhost:5191
 ```
 
 ### 🔑 Demo credentials
@@ -234,7 +290,7 @@ Enums serialize as strings over the API and are translated per value. All source
 ## 🧪 Testing
 
 ```bash
-dotnet test                       # xUnit + EF Core InMemory (Application services)
+dotnet test                       # Application services (real SQLite files) + API tests (in memory)
 cd src/AEspejo.Clinic.Client
 npm run lint                      # oxlint
 npm run build                     # type-check + production build
@@ -291,13 +347,19 @@ clinic-management-demo/
 │  ├─ AEspejo.Clinic.Domain/          # Entities & enums (no dependencies)
 │  ├─ AEspejo.Clinic.Application/     # Services, DTOs, validators, Result<T>, Mapster
 │  ├─ AEspejo.Clinic.Infrastructure/  # EF Core, repositories, tenancy, DB provider abstraction
-│  ├─ AEspejo.Clinic.Master/          # MasterDbContext (tenants + languages)
-│  ├─ AEspejo.Clinic.API/             # Controllers, middleware, auth, DI, DevSeeder
+│  ├─ AEspejo.Clinic.Master/          # MasterDbContext (tenants, languages, countries, operators)
+│  ├─ AEspejo.Clinic.Migrations.PostgreSql/  # PostgreSQL-only migrations
+│  ├─ AEspejo.Clinic.API/             # Controllers, middleware, auth, webhooks, DI, DevSeeder
 │  └─ AEspejo.Clinic.Client/          # React + Vite + TypeScript SPA
 ├─ tests/
-│  └─ AEspejo.Clinic.Application.Tests/
+│  ├─ AEspejo.Clinic.Application.Tests/  # Services, on real SQLite files
+│  └─ AEspejo.Clinic.Api.Tests/          # The API in memory, with a temporary data folder
 ├─ scripts/                           # SQL seed scripts (SQL Server + SQLite)
-└─ docs/requirements/                 # Feature specs (copy TEMPLATE.md per feature)
+├─ integrations/                      # Website integrations (WordPress)
+└─ docs/
+   ├─ requirements/                   # Feature specs (copy TEMPLATE.md per feature)
+   ├─ images/                         # Architecture diagrams (SVG) and README screenshots
+   └─ marketing/                      # Product overview, brochures and PDFs
 ```
 
 **Domain entities:** Branch · Room · User · Professional · Patient · PatientAllergy · MedicalCondition ·

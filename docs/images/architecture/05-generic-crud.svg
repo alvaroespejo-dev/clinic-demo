@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 440" width="980" height="440" role="img" aria-labelledby="t d">
+  <title id="t">The generic CRUD pipeline, frontend and backend</title>
+  <desc id="d">A single entity registry in the React app generates the menu, routes and CRUD pages, which call REST endpoints served by generic base controllers, services and repositories.</desc>
+  <defs>
+    <style>
+      text { font-family: "Segoe UI", Arial, Helvetica, sans-serif; fill: #1c2b4a; }
+      .card { fill: #ffffff; stroke: #d9e0ea; stroke-width: 1.5; }
+      .soft { fill: #e6f2f0; stroke: #b7d9d4; stroke-width: 1.5; }
+      .teal { fill: #0f766e; }
+      .db { fill: #f4f6fb; stroke: #9aa7bd; stroke-width: 1.5; }
+      .h { font-size: 15px; font-weight: 700; }
+      .s { font-size: 12px; fill: #5c6b86; }
+      .w { fill: #ffffff; }
+      .ws { font-size: 12px; fill: #d7efeb; }
+      .arrow { stroke: #1c2b4a; stroke-width: 2; fill: none; marker-end: url(#a); }
+      .band { font-size: 13px; font-weight: 700; fill: #0f766e; letter-spacing: 1.2px; }
+    </style>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1c2b4a"/>
+    </marker>
+  </defs>
+  <rect width="980" height="440" rx="18" fill="#fbfcff"/>
+
+  <text class="band" x="30" y="34">FRONTEND · AEspejo.Clinic.Client</text>
+  <rect class="teal" x="30" y="50" width="250" height="110" rx="14"/>
+  <text class="h w" x="155" y="80" text-anchor="middle">features/registry.ts</text>
+  <text class="ws" x="155" y="102" text-anchor="middle">EntityConfig[] — one entry per</text>
+  <text class="ws" x="155" y="120" text-anchor="middle">entity: columns, form fields,</text>
+  <text class="ws" x="155" y="138" text-anchor="middle">references, enum names</text>
+
+  <path class="arrow" d="M280 88 L330 70"/>
+  <path class="arrow" d="M280 105 L330 105"/>
+  <path class="arrow" d="M280 124 L330 142"/>
+
+  <rect class="card" x="332" y="44" width="170" height="40" rx="10"/>
+  <text class="h" x="417" y="70" text-anchor="middle">Menu + routes</text>
+  <rect class="card" x="332" y="88" width="170" height="40" rx="10"/>
+  <text class="h" x="417" y="114" text-anchor="middle">CrudPage</text>
+  <rect class="card" x="332" y="132" width="170" height="40" rx="10"/>
+  <text class="h" x="417" y="158" text-anchor="middle">createCrud() hooks</text>
+  <text class="s" x="520" y="70">sidebar groups, admin-only items</text>
+  <text class="s" x="520" y="114">list, search, form dialog, i18n</text>
+  <text class="s" x="520" y="158">TanStack Query + typed API client</text>
+
+  <path class="arrow" d="M417 172 L417 214"/>
+  <text class="s" x="430" y="198">GET · POST · PUT · DELETE  /api/{resource}</text>
+
+  <text class="band" x="30" y="236">BACKEND · AEspejo.Clinic.API / Application / Infrastructure</text>
+  <rect class="soft" x="30" y="252" width="240" height="110" rx="14"/>
+  <text class="h" x="150" y="280" text-anchor="middle">CrudControllerBase</text>
+  <text class="s" x="150" y="302" text-anchor="middle">subclass with a [Route];</text>
+  <text class="s" x="150" y="318" text-anchor="middle">add [Authorize(Roles)] to</text>
+  <text class="s" x="150" y="334" text-anchor="middle">restrict an entity</text>
+  <path class="arrow" d="M270 306 L316 306"/>
+
+  <rect class="soft" x="318" y="252" width="260" height="110" rx="14"/>
+  <text class="h" x="448" y="280" text-anchor="middle">CrudServiceBase</text>
+  <text class="h" x="448" y="300" text-anchor="middle">SoftDeleteCrudServiceBase</text>
+  <text class="s" x="448" y="322" text-anchor="middle">FluentValidation · Mapster</text>
+  <text class="s" x="448" y="338" text-anchor="middle">Result&lt;T&gt; outcomes</text>
+  <path class="arrow" d="M578 306 L624 306"/>
+
+  <rect class="soft" x="626" y="252" width="250" height="110" rx="14"/>
+  <text class="h" x="751" y="280" text-anchor="middle">Repository&lt;T&gt;</text>
+  <text class="h" x="751" y="300" text-anchor="middle">SoftDeleteRepository&lt;T&gt;</text>
+  <text class="s" x="751" y="322" text-anchor="middle">clinic filter · soft delete</text>
+  <text class="s" x="751" y="338" text-anchor="middle">AuditInterceptor on save</text>
+  <path class="arrow" d="M876 306 L906 306"/>
+
+  <rect class="db" x="908" y="272" width="56" height="70" rx="12"/>
+  <text class="h" x="936" y="312" text-anchor="middle">DB</text>
+
+  <rect class="card" x="30" y="382" width="920" height="40" rx="10"/>
+  <text class="s" x="46" y="407" style="fill:#1c2b4a">Adding an entity usually means: entity + EF mapping + DTOs + service registration + a controller subclass + one registry entry + i18n keys.</text>
+</svg>

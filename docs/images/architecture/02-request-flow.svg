@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 470" width="1000" height="470" role="img" aria-labelledby="t d">
+  <title id="t">Lifecycle of an API request</title>
+  <desc id="d">A request passes tenant resolution, JWT authentication with tenant-claim check, a controller, a service and the repository, and reaches the clinic's rows through a global TenantId filter.</desc>
+  <defs>
+    <style>
+      text { font-family: "Segoe UI", Arial, Helvetica, sans-serif; fill: #1c2b4a; }
+      .card { fill: #ffffff; stroke: #d9e0ea; stroke-width: 1.5; }
+      .soft { fill: #e6f2f0; stroke: #b7d9d4; stroke-width: 1.5; }
+      .db { fill: #f4f6fb; stroke: #9aa7bd; stroke-width: 1.5; }
+      .h { font-size: 15px; font-weight: 700; }
+      .s { font-size: 12px; fill: #5c6b86; }
+      .n { fill: #0f766e; }
+      .nt { fill: #ffffff; font-size: 13px; font-weight: 700; }
+      .arrow { stroke: #1c2b4a; stroke-width: 2; fill: none; marker-end: url(#a); }
+      .err { font-size: 12px; fill: #b4452c; font-weight: 600; }
+    </style>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1c2b4a"/>
+    </marker>
+  </defs>
+  <rect width="1000" height="470" rx="18" fill="#fbfcff"/>
+
+  <rect class="card" x="20" y="120" width="120" height="86" rx="14"/>
+  <text class="h" x="80" y="152" text-anchor="middle">Browser</text>
+  <text class="s" x="80" y="172" text-anchor="middle">React SPA</text>
+  <text class="s" x="80" y="188" text-anchor="middle">Bearer token</text>
+
+  <path class="arrow" d="M140 163 L172 163"/>
+
+  <rect class="soft" x="174" y="104" width="172" height="118" rx="14"/>
+  <circle class="n" cx="196" cy="126" r="12"/><text class="nt" x="196" y="131" text-anchor="middle">1</text>
+  <text class="h" x="212" y="131">Tenant resolution</text>
+  <text class="s" x="190" y="154">Clinic from subdomain or</text>
+  <text class="s" x="190" y="171">X-Tenant (master DB); the</text>
+  <text class="s" x="190" y="188">token must belong to it</text>
+  <text class="err" x="190" y="210">no clinic 400 · mismatch 403</text>
+
+  <path class="arrow" d="M346 163 L378 163"/>
+
+  <rect class="soft" x="380" y="104" width="172" height="118" rx="14"/>
+  <circle class="n" cx="402" cy="126" r="12"/><text class="nt" x="402" y="131" text-anchor="middle">2</text>
+  <text class="h" x="418" y="131">Authorization</text>
+  <text class="s" x="396" y="154">Role policies such as</text>
+  <text class="s" x="396" y="171">[Authorize(Roles = Admin)]</text>
+  <text class="s" x="396" y="188">on private routes</text>
+  <text class="err" x="396" y="210">no token / wrong role → 401/403</text>
+
+  <path class="arrow" d="M552 163 L584 163"/>
+
+  <rect class="card" x="586" y="104" width="190" height="118" rx="14"/>
+  <circle class="n" cx="608" cy="126" r="12"/><text class="nt" x="608" y="131" text-anchor="middle">3</text>
+  <text class="h" x="624" y="131">Controller</text>
+  <text class="s" x="602" y="154">CrudControllerBase or a</text>
+  <text class="s" x="602" y="171">custom controller; maps</text>
+  <text class="s" x="602" y="188">Result&lt;T&gt; to HTTP codes</text>
+
+  <path class="arrow" d="M776 163 L808 163"/>
+
+  <rect class="card" x="810" y="104" width="170" height="118" rx="14"/>
+  <circle class="n" cx="832" cy="126" r="12"/><text class="nt" x="832" y="131" text-anchor="middle">4</text>
+  <text class="h" x="848" y="131">Service</text>
+  <text class="s" x="826" y="154">FluentValidation,</text>
+  <text class="s" x="826" y="171">Mapster, business</text>
+  <text class="s" x="826" y="188">rules, side effects</text>
+
+  <path class="arrow" d="M895 222 L895 268"/>
+
+  <rect class="soft" x="600" y="270" width="380" height="112" rx="14"/>
+  <circle class="n" cx="622" cy="292" r="12"/><text class="nt" x="622" y="297" text-anchor="middle">5</text>
+  <text class="h" x="638" y="297">Repository + AppDbContext</text>
+  <text class="s" x="616" y="320">Global filter: every query is limited to the clinic's TenantId</text>
+  <text class="s" x="616" y="337">Stamps TenantId on save, refuses writes to other clinics</text>
+  <text class="s" x="616" y="354">Soft delete · AuditInterceptor writes an AuditLog row</text>
+
+  <path class="arrow" d="M600 326 L520 326"/>
+
+  <rect class="db" x="340" y="286" width="180" height="80" rx="14"/>
+  <text class="h" x="430" y="320" text-anchor="middle">Clinic database</text>
+  <text class="s" x="430" y="340" text-anchor="middle">dedicated, or shared and</text>
+  <text class="s" x="430" y="355" text-anchor="middle">separated by TenantId</text>
+
+  <path class="arrow" d="M260 222 L260 286 L220 286"/>
+  <rect class="db" x="40" y="262" width="180" height="80" rx="14"/>
+  <text class="h" x="130" y="296" text-anchor="middle">Master database</text>
+  <text class="s" x="130" y="316" text-anchor="middle">tenants · connection</text>
+  <text class="s" x="130" y="331" text-anchor="middle">strings · placement</text>
+
+  <text class="s" x="40" y="412">Public routes skip step 1 and resolve the clinic themselves, for example the Stripe and Twilio</text>
+  <text class="s" x="40" y="430">webhooks (tenant in the route) and /api/platform (operators have no clinic).</text>
+  <text class="s" x="40" y="454" style="fill:#0f766e;font-weight:600">The response travels back the same way: service result → controller → JSON.</text>
+</svg>

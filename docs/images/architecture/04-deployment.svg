@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 520" width="1000" height="520" role="img" aria-labelledby="t d">
+  <title id="t">Runtime and deployment view</title>
+  <desc id="d">Staff, patients and platform operators use the React SPA hosted on Azure Static Web Apps. It calls the .NET API on Azure App Service, which stores SQLite files, uploads and encryption keys in a persistent data directory and talks to Stripe, Mercado Pago, Twilio and SMTP. GitHub Actions builds and deploys both.</desc>
+  <defs>
+    <style>
+      text { font-family: "Segoe UI", Arial, Helvetica, sans-serif; fill: #1c2b4a; }
+      .card { fill: #ffffff; stroke: #d9e0ea; stroke-width: 1.5; }
+      .soft { fill: #e6f2f0; stroke: #b7d9d4; stroke-width: 1.5; }
+      .teal { fill: #0f766e; }
+      .db { fill: #f4f6fb; stroke: #9aa7bd; stroke-width: 1.5; }
+      .ext { fill: #fff7ee; stroke: #efc79b; stroke-width: 1.5; }
+      .h { font-size: 15px; font-weight: 700; }
+      .s { font-size: 12px; fill: #5c6b86; }
+      .w { fill: #ffffff; }
+      .ws { font-size: 12px; fill: #d7efeb; }
+      .line { stroke: #1c2b4a; stroke-width: 2; fill: none; marker-end: url(#a); }
+      .dline { stroke: #9aa7bd; stroke-width: 2; fill: none; stroke-dasharray: 6 5; marker-end: url(#b); }
+      .lbl { font-size: 12px; fill: #0f766e; font-weight: 600; }
+    </style>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1c2b4a"/>
+    </marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#9aa7bd"/>
+    </marker>
+  </defs>
+  <rect width="1000" height="520" rx="18" fill="#fbfcff"/>
+
+  <rect class="card" x="24" y="40" width="170" height="92" rx="14"/>
+  <text class="h" x="109" y="68" text-anchor="middle">Clinic staff</text>
+  <text class="s" x="109" y="88" text-anchor="middle">Admin · Dentist</text>
+  <text class="s" x="109" y="104" text-anchor="middle">Assistant · Receptionist</text>
+
+  <rect class="card" x="24" y="156" width="170" height="92" rx="14"/>
+  <text class="h" x="109" y="184" text-anchor="middle">Patients</text>
+  <text class="s" x="109" y="204" text-anchor="middle">/book · /pay/:token</text>
+  <text class="s" x="109" y="220" text-anchor="middle">/a/:token · SMS reply</text>
+
+  <rect class="card" x="24" y="272" width="170" height="76" rx="14"/>
+  <text class="h" x="109" y="300" text-anchor="middle">Platform operator</text>
+  <text class="s" x="109" y="320" text-anchor="middle">/platform/clinics</text>
+
+  <path class="line" d="M194 86 L276 150"/>
+  <path class="line" d="M194 202 L276 190"/>
+  <path class="line" d="M194 310 L276 220"/>
+
+  <rect class="soft" x="278" y="118" width="210" height="116" rx="14"/>
+  <text class="h" x="383" y="146" text-anchor="middle">Azure Static Web App</text>
+  <text class="s" x="383" y="168" text-anchor="middle">React SPA · PWA</text>
+  <text class="s" x="383" y="186" text-anchor="middle">VITE_API_URL · VITE_TENANT</text>
+  <text class="s" x="383" y="204" text-anchor="middle">English / Spanish</text>
+
+  <path class="line" d="M488 176 L558 176"/>
+  <text class="lbl" x="494" y="168">HTTPS</text>
+
+  <rect class="teal" x="560" y="86" width="230" height="180" rx="14"/>
+  <text class="h w" x="675" y="114" text-anchor="middle">Azure App Service</text>
+  <text class="ws" x="675" y="134" text-anchor="middle">ASP.NET Core Web API · .NET 10</text>
+  <text class="ws" x="675" y="160" text-anchor="middle">TenantResolutionMiddleware</text>
+  <text class="ws" x="675" y="178" text-anchor="middle">Controllers · services · JWT</text>
+  <text class="ws" x="675" y="196" text-anchor="middle">AppointmentReminderService</text>
+  <text class="ws" x="675" y="214" text-anchor="middle">Webhooks · OpenAPI + Scalar</text>
+  <text class="ws" x="675" y="240" text-anchor="middle">Database__Provider = Sqlite</text>
+
+  <path class="line" d="M675 266 L675 322"/>
+  <rect class="db" x="520" y="324" width="310" height="112" rx="14"/>
+  <text class="h" x="675" y="350" text-anchor="middle">Persistent data directory</text>
+  <text class="s" x="675" y="372" text-anchor="middle">master.db + one .db per clinic (SQLite)</text>
+  <text class="s" x="675" y="390" text-anchor="middle">uploads/{tenant}/… images and clinical files</text>
+  <text class="s" x="675" y="408" text-anchor="middle">Data Protection keys (encrypted secrets)</text>
+  <text class="s" x="675" y="426" text-anchor="middle" style="fill:#0f766e;font-weight:600">%HOME%\data on Azure · ./data locally</text>
+
+  <rect class="db" x="860" y="324" width="120" height="112" rx="14" style="stroke-dasharray:6 5"/>
+  <text class="h" x="920" y="358" text-anchor="middle">SQL Server</text>
+  <text class="h" x="920" y="380" text-anchor="middle">PostgreSQL</text>
+  <text class="s" x="920" y="404" text-anchor="middle">alternative</text>
+  <text class="s" x="920" y="420" text-anchor="middle">engines</text>
+  <path class="dline" d="M830 380 L858 380"/>
+
+  <rect class="ext" x="840" y="40" width="140" height="48" rx="12"/>
+  <text class="h" x="910" y="69" text-anchor="middle">Stripe</text>
+  <rect class="ext" x="840" y="98" width="140" height="48" rx="12"/>
+  <text class="h" x="910" y="127" text-anchor="middle">Mercado Pago</text>
+  <rect class="ext" x="840" y="156" width="140" height="48" rx="12"/>
+  <text class="h" x="910" y="185" text-anchor="middle">Twilio SMS</text>
+  <rect class="ext" x="840" y="214" width="140" height="48" rx="12"/>
+  <text class="h" x="910" y="243" text-anchor="middle">SMTP email</text>
+  <path class="line" d="M840 64 L792 130" style="marker-start:url(#a)"/>
+  <path class="line" d="M840 122 L792 150" style="marker-start:url(#a)"/>
+  <path class="line" d="M840 180 L792 180" style="marker-start:url(#a)"/>
+  <path class="line" d="M840 238 L792 220" style="marker-start:url(#a)"/>
+  <text class="s" x="800" y="290" style="font-size:11px">webhooks in,</text>
+  <text class="s" x="800" y="304" style="font-size:11px">requests and messages out</text>
+
+  <rect class="card" x="24" y="404" width="440" height="96" rx="14"/>
+  <text class="h" x="44" y="432">GitHub Actions</text>
+  <text class="s" x="44" y="454">ci.yml — build + test backend, lint + build frontend</text>
+  <text class="s" x="44" y="472">deploy-backend.yml → App Service · static-web-apps → SPA</text>
+  <text class="s" x="44" y="490">Production settings live in Azure, not in the repository</text>
+</svg>
